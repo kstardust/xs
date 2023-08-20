@@ -6,9 +6,9 @@
 /* A peculiar pitfall:
  *
  * When we use the ELF format as the input to the QEMU kernel option, QEMU will load the
- * ELF file exactly at (kernaddr) lets say the kernaddr is 0x2000, according to
+ * ELF file exactly at kernaddr. Lets say the kernaddr is 0x2000, according to
  * (https://www.qemu.org/docs/master/system/arm/virt.html), the RAM starts at 0x40000000.
- * I assume QEMU will loaded the ELF to the ROM (you can verify that with info mtree in the QEMU
+ * I assume QEMU loaded the ELF to the ROM (you can verify that with info mtree in the QEMU
  * monitor), and the stack, which is located immediately after the ELF file, is also in ROM.
  * All stack operations will fail quietly.
  */
@@ -45,10 +45,10 @@ _start:
 
 4:  bl      get_virt_delta
     
-	adrp	x2, exception_table
+    adrp	x2, exception_table
     add x2, x2, :lo12:exception_table
     
-	msr	vbar_el1, x2
+    msr	vbar_el1, x2
     svc     0
     bl 	    c_start
     svc     0    
