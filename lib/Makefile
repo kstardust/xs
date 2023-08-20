@@ -8,8 +8,8 @@ CC = $(LLVMPATH)/clang
 CFLAGS = -g --target=aarch64-elf -Wall -O2 -ffreestanding -nostdinc -nostdlib -I../include 
 LDFLAGS= -r
 
-_boot.o: $(OFILES) $(ASMOFILES)
-	$(LD) $(LDFLAGS) $(OFILES) $(ASMOFILES) -o _boot.o
+lib.o: $(OFILES) $(ASMOFILES)
+	$(LD) $(LDFLAGS) $(OFILES) $(ASMOFILES) -o lib.o
 
 %.o: %.S
 	$(CC) $(CFLAGS) -c $< -o $@

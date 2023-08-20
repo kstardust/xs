@@ -5,10 +5,10 @@ ASMOFILES = $(ASMFILES:.S=.o)
 LLVMPATH = /opt/homebrew/opt/llvm/bin
 LD = $(LLVMPATH)/ld.lld
 CC = $(LLVMPATH)/clang
-CFLAGS = --target=aarch64-elf -Wall -O2 -ffreestanding -nostdinc -nostdlib -I../include
+CFLAGS = -g --target=aarch64-elf -Wall -O2 -ffreestanding -nostdinc -nostdlib -I../include
 LDFLAGS= -r
 
-all: kernel.o
+
 
 kernel.o: $(OFILES) $(ASMOFILES)
 	$(LD) $(LDFLAGS) $(OFILES) $(ASMOFILES) -o kernel.o
@@ -20,4 +20,4 @@ kernel.o: $(OFILES) $(ASMOFILES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm *.o
+	rm *.o 2> /dev/null || true
