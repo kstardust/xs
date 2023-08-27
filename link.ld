@@ -17,4 +17,3 @@ SECTIONS
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
 }
 __bss_size = (__bss_end - __bss_start)>>3;
-__stack_end = _end + (8 << 20); /* 8M Stack */
