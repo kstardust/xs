@@ -31,30 +31,35 @@ _start:
     b       1b
 2:  /* main core */
 
-    bl start_mmu
+    bl      get_virt_delta
+ 
+    bl      build_page_table
+    
+    bl      start_mmu
 
     /* switch to virtual address space */
-    ldr x1, vmdone_addr
-    br  x1      
+    ldr     x1, vmdone_addr
+    br      x1      
 
 vmdone:
-    /* Set stack to start below our code */
+    /* Set stack to start below our code */    
     adrp    x1, stack_end
     add     x1, x1, :lo12:stack_end
     mov     sp, x1
-
+    
     /* init bss */
     ldr     x1, =__bss_start
     ldr     w2, =__bss_size
-3:  cbz     w2, 4f               
+3:  cbz     w2, 4f
+    
     str     xzr, [x1], #8
     
     sub     w2, w2, #1
     cbnz    w2, 3b               
 
-4:  bl      get_virt_delta
-        
-    msr	vbar_el1, x2
+    bl 	    c_start
+    
+4:  msr	    vbar_el1, x2
     svc     0
     bl 	    c_start
     svc     0    
@@ -71,13 +76,154 @@ vmdone_addr:
 
 build_page_table:
 
+    /* Save LR */
+    mov x28, x30
+    
+    /* x27: PA - VA */
+    adrp x10, page_table_el0_l1
+    add x10, x10, :lo12:page_table_el0_l1
+
+    mov x8, #(kernaddr)
+    add x7, x8, x27
+    mov x9, #1
+    
+    /* VA == PA L1 */
+    bl build_l1_block
+
+    mov x7, x10
+    add x10, x10, #(PAGE_SIZE)
+
+    /* VA == PA L0 */
+    bl link_l0_table
+
+    /* Restore LR*/
+    mov x30, x28
+    
+    ret
+
+build_l1_block:
+    /*
+        x7 PA start
+        x8 VA start
+        x9 entry count
+        x10 table address
+    */
+
+    /* attributes */
+    mov x11, #(TD_BLOCK)
+    orr x11, x11, #(TD_DEFAUL_ATTR)
+    orr x11, x11, #(TD_ATTR_UXN)
+
+    /* index */    
+    lsr x12, x8, #(L1_SHIFT)
+    and x12, x12, #(Ln_ADDR_MASK)
+
+    /* output PA */
+    lsr x7, x7, #(L1_SHIFT)
+    
+1:  orr x13, x11, x7, lsl #(L1_SHIFT)
+    str x13, [x10, x12, lsl #3]
+
+    sub x9, x9, #1
+    add x7, x7, #1
+    add x12, x12, #1
+    
+    cbnz x9, 1b
+
+    ret
+
+build_l2_block:
+    /*
+        x7 PA start
+        x8 VA start
+        x9 entry count
+        x10 table address
+    */
+
+    /* attributes */
+    mov x11, #(TD_BLOCK)
+    orr x11, x11, #(TD_DEFAUL_ATTR)
+    orr x11, x11, #(TD_ATTR_UXN)
+
+    /* index */    
+    lsr x12, x8, #(L2_SHIFT)
+    and x12, x12, #(Ln_ADDR_MASK)
+
+    /* output PA */
+    lsr x7, x7, #(L2_SHIFT)
+    
+1:  orr x13, x11, x7, lsl #(L2_SHIFT)
+    str x13, [x10, x12, lsl #3]
+
+    sub x9, x9, #1
+    add x7, x7, #1
+    add x12, x12, #1
+    
+    cbnz x9, 1b
+
+    ret
+
+    
+link_l0_table:
+    /*
+        x7 PA start(L1 table)
+        x8 VA start
+        x10 table address
+    */
+
+    /* attributes */
+    mov x11, #(TD_TABLE)
+    orr x11, x11, #(TD_TATTR_DEFAULT)
+
+    /* index */
+    lsr x12, x8, #(L0_SHIFT)
+    and x12, x12, #(Ln_ADDR_MASK)
+
+    /* output PA (L1 table PA) */
+    lsr x7, x7, #(PAGE_SHIFT)
+
+    orr x13, x11, x7, lsl #(PAGE_SHIFT)
+    str x13, [x10, x12, lsl #3]
+
+    ret
+
+link_l1_table:
+    /*
+        x7 PA start(L2 table)
+        x8 VA start
+        x10 table address
+    */
+
+    /* attributes */
+    mov x11, #(TD_TABLE)
+    orr x11, x11, #(TD_TATTR_DEFAULT)
+
+    /* index */
+    lsr x12, x8, #(L1_SHIFT)
+    and x12, x12, #(Ln_ADDR_MASK)
+
+    /* output PA (L2 table PA) */
+    lsr x7, x7, #(PAGE_SHIFT)
+
+    orr x13, x11, x7, lsl #(PAGE_SHIFT)
+    str x13, [x10, x12, lsl #3]
+
+    ret
+    
 
 start_mmu:
     adrp	x2, exception_table
     add x2, x2, :lo12:exception_table
-    
+
     tlbi vmalle1
+
+    adrp x1, page_table_el0_l0
+    add x1, x1, :lo12:page_table_el0_l0
     msr ttbr0_el1, x1
+
+    adrp x1, page_table_el1_l0
+    add x1, x1, :lo12:page_table_el1_l0
+    msr ttbr1_el1, x1
 
     ldr x2, tcr
 
@@ -101,6 +247,7 @@ mair:
     .quad MAIR_NORMAL_WB
 tcr:
     .quad TCR
+
     
 get_virt_delta:
     .align 2
@@ -114,6 +261,20 @@ virt_addr:
 
 .bss
     .align PAGE_SHIFT
+
+/* VA == PA table */
+page_table_el0_l1:
+    .space PAGE_SIZE
+page_table_el0_l0:
+    .space PAGE_SIZE
+
+/* kernel virtual map */
+page_table_el1_l2:
+    .space PAGE_SIZE
+page_table_el1_l1:
+    .space PAGE_SIZE
+page_table_el1_l0:
+    .space PAGE_SIZE
 
 stack_start:
     .space KERN_STACK_SIZE
