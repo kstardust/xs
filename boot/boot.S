@@ -83,8 +83,8 @@ build_page_table:
     /* Save LR */
     mov x28, x30
 
-    adrp x10, page_table_el1_l1
-    add x10, x10, :lo12:page_table_el1_l1
+    adrp x10, page_table_el1_l2
+    add x10, x10, :lo12:page_table_el1_l2
 
     /* build 1G kernel vm map */
     mov x8, #(kernaddr)
@@ -94,13 +94,13 @@ build_page_table:
     /* L2 */
     bl build_l2_block
 
-    add x7, x10, x27
+    mov x7, x10
     add x10, x10, #(PAGE_SIZE)
     
     /* L1 */
     bl link_l2_table
 
-    add x7, x10, x27
+    mov x7, x10
     add x10, x10, #(PAGE_SIZE)
 
     /* L0 */
