@@ -17,7 +17,7 @@
  */
     
 .global kernaddr
-.set kernaddr, 0x40000000//KERN_MIN_ADDR // for elf, use: 0x40000000
+.set kernaddr, KERN_MIN_ADDR // for elf, use: 0x40000000
 
     
 _start:
@@ -137,7 +137,7 @@ build_page_table:
     /* build 1G kernel vm map */
     mov x8, #(kernaddr)
     add x7, x8, x27
-    mov x9, #2
+    mov x9, #512
     
     /* L2 */
     bl build_l2_block
@@ -160,7 +160,7 @@ build_page_table:
     
     mov x8, #0
     mov x7, #0
-    mov x9, #3
+    mov x9, #512
     
     /* VA == PA L1 */
     bl build_l1_block
