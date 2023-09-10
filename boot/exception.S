@@ -6,7 +6,7 @@ handle_irq:
     eret
 
 handle_sync:
-    bl  do_handle_sync    
+    bl  do_handle_sync
     eret
 
 handle_error:
@@ -19,6 +19,7 @@ handle_empty:
         
 .macro	vector	name
     .align 7        /* 128 bytes */
+    mrs x28, esr_el1
     b handle_\name
 
 1:  wfe           /* not expected to execute here */

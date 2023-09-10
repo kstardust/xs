@@ -17,7 +17,7 @@
  */
     
 .global kernaddr
-.set kernaddr, 0x40000000 // KERN_MIN_ADDR
+.set kernaddr, KERN_MIN_ADDR // for elf, use: 0x40000000
 
 
 _start:
@@ -32,7 +32,9 @@ _start:
 2:  /* main core */
 
     bl      get_virt_delta
- 
+    
+    bl      setup_exception
+    
     bl      build_page_table
     
     bl      start_mmu
@@ -59,42 +61,67 @@ vmdone:
 
     bl 	    c_start
     
-4:  msr	    vbar_el1, x2
+4:
     svc     0
     bl 	    c_start
     svc     0    
     bl 	    c_start
     svc     0
-    mov     x28, #0xf
+    mov     x24, #0xf
     
+5:
     wfe
-    b       1b
+    b       5b
     
 vmdone_addr:
     .quad vmdone
     
 
 build_page_table:
-
+    /* x27: PA - VA */
+    
     /* Save LR */
     mov x28, x30
-    
-    /* x27: PA - VA */
-    adrp x10, page_table_el0_l1
-    add x10, x10, :lo12:page_table_el0_l1
 
+    adrp x10, page_table_el1_l1
+    add x10, x10, :lo12:page_table_el1_l1
+
+    /* build 1G kernel vm map */
     mov x8, #(kernaddr)
     add x7, x8, x27
-    mov x9, #1
+    mov x9, #512
+    
+    /* L2 */
+    bl build_l2_block
+
+    add x7, x10, x27
+    add x10, x10, #(PAGE_SIZE)
+    
+    /* L1 */
+    bl link_l2_table
+
+    add x7, x10, x27
+    add x10, x10, #(PAGE_SIZE)
+
+    /* L0 */
+    bl link_l1_table
+
+    /* build a 512G VA == PA page */
+    adrp x10, page_table_el0_l1
+    add x10, x10, :lo12:page_table_el0_l1
+    
+    mov x8, #0
+    mov x7, #0
+    mov x9, #512
     
     /* VA == PA L1 */
     bl build_l1_block
 
-    mov x7, x10
+    add x7, x10, x27
     add x10, x10, #(PAGE_SIZE)
 
     /* VA == PA L0 */
-    bl link_l0_table
+    bl link_l1_table
 
     /* Restore LR*/
     mov x30, x28
@@ -103,6 +130,7 @@ build_page_table:
 
 build_l1_block:
     /*
+    1G region
         x7 PA start
         x8 VA start
         x9 entry count
@@ -117,7 +145,7 @@ build_l1_block:
     /* index */    
     lsr x12, x8, #(L1_SHIFT)
     and x12, x12, #(Ln_ADDR_MASK)
-
+    
     /* output PA */
     lsr x7, x7, #(L1_SHIFT)
     
@@ -134,6 +162,7 @@ build_l1_block:
 
 build_l2_block:
     /*
+    2M region
         x7 PA start
         x8 VA start
         x9 entry count
@@ -164,7 +193,7 @@ build_l2_block:
     ret
 
     
-link_l0_table:
+link_l1_table:
     /*
         x7 PA start(L1 table)
         x8 VA start
@@ -187,7 +216,7 @@ link_l0_table:
 
     ret
 
-link_l1_table:
+link_l2_table:
     /*
         x7 PA start(L2 table)
         x8 VA start
@@ -211,10 +240,16 @@ link_l1_table:
     ret
     
 
-start_mmu:
+setup_exception:
     adrp	x2, exception_table
     add x2, x2, :lo12:exception_table
-
+    msr	    vbar_el1, x2
+    ret
+    
+    
+start_mmu:
+    dsb sy
+    
     tlbi vmalle1
 
     adrp x1, page_table_el0_l0
@@ -240,7 +275,7 @@ start_mmu:
     orr x0, x0, #1
     msr sctlr_el1, x0
     isb
-
+    
     ret
 
 mair:
@@ -262,6 +297,14 @@ virt_addr:
 .bss
     .align PAGE_SHIFT
 
+stack_start:
+    .space KERN_STACK_SIZE
+stack_end:
+
+    
+.section .init_pagetable, "aw", %nobits
+    .align PAGE_SHIFT
+    
 /* VA == PA table */
 page_table_el0_l1:
     .space PAGE_SIZE
@@ -275,7 +318,3 @@ page_table_el1_l1:
     .space PAGE_SIZE
 page_table_el1_l0:
     .space PAGE_SIZE
-
-stack_start:
-    .space KERN_STACK_SIZE
-stack_end:

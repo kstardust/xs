@@ -11,7 +11,8 @@
 
 #define TG0 (0)        /* 4KB */
 #define T0_CACHE_ATTR ((1 << 8))  /* Inner Write-Back Read-Allocate Write-Allocate Cacheable. */
-#define T0SZ  ((64 - VA_BITS) << 16)
+#define T1SZ  ((64 - VA_BITS) << 16)
+#define T0SZ  ((64 - VA_BITS) << 0)
 
 #define TCR (TG1 | TG0 | T1SZ | T0SZ | T1_CACHE_ATTR | T0_CACHE_ATTR)
 
@@ -28,7 +29,7 @@
 
 #define TD_ATTR_SH_INNER       (3 << 8)     /* Inner Shareable */
 #define	TD_ATTR_AF		  (1 << 10)    /* Access flag */
-#define TD_ATTR_nG             (1 << 11)    /* non-global */ 
+#define TD_ATTR_nG             (0 << 11)    /* non-global */ 
 #define	TD_DEFAUL_ATTR  (TD_ATTR_AF | TD_ATTR_nG | TD_ATTR_SH_INNER | MAIR_INDEX_WB << 2)
 
 #define	TD_ATTR_UXN  (1 << 54)       /* Unprivileged Execute Never */
