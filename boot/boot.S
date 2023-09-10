@@ -17,12 +17,12 @@
  */
     
 .global kernaddr
-.set kernaddr, KERN_MIN_ADDR // for elf, use: 0x40000000
+.set kernaddr, 0x40000000//KERN_MIN_ADDR // for elf, use: 0x40000000
 
-
+    
 _start:
     .align 2
-
+    
     mrs     x1, mpidr_el1
     and     x1, x1, #3
     cbz     x1, 2f
@@ -30,7 +30,10 @@ _start:
 1:  wfe
     b       1b
 2:  /* main core */
-
+    
+    bl      get_virt_delta
+    bl      relocate
+    
     bl      get_virt_delta
     
     bl      setup_exception
@@ -41,27 +44,27 @@ _start:
 
     /* switch to virtual address space */
     ldr     x1, vmdone_addr
-    br      x1      
+    br      x1  
 
 vmdone:
     /* Set stack to start below our code */    
     adrp    x1, stack_end
     add     x1, x1, :lo12:stack_end
+        
     mov     sp, x1
-    
+
     /* init bss */
     ldr     x1, =__bss_start
     ldr     w2, =__bss_size
 3:  cbz     w2, 4f
     
     str     xzr, [x1], #8
-    
     sub     w2, w2, #1
-    cbnz    w2, 3b               
-
-    bl 	    c_start
+    
+    b       3b    
     
 4:
+    bl 	    c_start    
     svc     0
     bl 	    c_start
     svc     0    
@@ -77,6 +80,51 @@ vmdone_addr:
     .quad vmdone
     
 
+relocate:
+    .align 2
+    
+    /*
+     * We only implemented L2 page table in this file, which needs ours kernel to be loaded
+     * at 2MiB aligned address, if not, reposition ourself to the next 2MiB boundary.
+    */
+    /* PA */    
+    mov x6, #(kernaddr)
+    
+    add x1, x6, x27
+    
+    ldr x2, =(LOAD_ALIGN)
+    ldr x3, =(LOAD_ADDR_MASK)
+
+    add x4, x1, x2
+    and x4, x4, x3
+
+    sub x4, x4, x1
+    cbz x4, redone
+    
+    /* End of program (PA) */
+    adrp x2, _end
+    add  x2, x2, :lo12:_end
+    
+    /* size */
+    sub x3, x2, x1
+
+    /* End of new position (PA) */    
+    add x1, x2, x4
+    
+    /* forward copy */
+1:  ldr x5, [x2, #-8]!
+    str x5, [x1, #-8]!
+    
+    sub x3, x3, #8
+    cbnz x3, 1b
+
+    /* jump to new location */
+    /* ret addr */
+    add x30, x30, x4
+    
+redone: 
+    ret
+    
 build_page_table:
     /* x27: PA - VA */
     
@@ -89,7 +137,7 @@ build_page_table:
     /* build 1G kernel vm map */
     mov x8, #(kernaddr)
     add x7, x8, x27
-    mov x9, #512
+    mov x9, #2
     
     /* L2 */
     bl build_l2_block
@@ -98,13 +146,13 @@ build_page_table:
     add x10, x10, #(PAGE_SIZE)
     
     /* L1 */
-    bl link_l2_table
+    bl link_l1_table
 
     mov x7, x10
     add x10, x10, #(PAGE_SIZE)
 
     /* L0 */
-    bl link_l1_table
+    bl link_l0_table
 
     /* build a 512G VA == PA page */
     adrp x10, page_table_el0_l1
@@ -112,22 +160,22 @@ build_page_table:
     
     mov x8, #0
     mov x7, #0
-    mov x9, #512
+    mov x9, #3
     
     /* VA == PA L1 */
     bl build_l1_block
 
-    add x7, x10, x27
+    mov x7, x10
     add x10, x10, #(PAGE_SIZE)
 
     /* VA == PA L0 */
-    bl link_l1_table
+    bl link_l0_table
 
     /* Restore LR*/
     mov x30, x28
     
     ret
-
+    
 build_l1_block:
     /*
     1G region
@@ -193,7 +241,7 @@ build_l2_block:
     ret
 
     
-link_l1_table:
+link_l0_table:
     /*
         x7 PA start(L1 table)
         x8 VA start
@@ -216,7 +264,7 @@ link_l1_table:
 
     ret
 
-link_l2_table:
+link_l1_table:
     /*
         x7 PA start(L2 table)
         x8 VA start
@@ -289,7 +337,8 @@ get_virt_delta:
     adrp    x1, virt_addr
     add     x1, x1, :lo12:virt_addr
     ldr     x2, [x1]
-    sub     x27, x1, x2               /* DELTA(x27) = PA(x2) - VA(x1) */
+    sub     x27, x1, x2               /* DELTA(x27) = PA(x1) - VA(x2) */
+    
     ret
 virt_addr:  
     .quad virt_addr            

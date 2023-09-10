@@ -49,4 +49,11 @@
 #define Ln_ADDR_MASK (Ln_ENTRIES - 1)
 #define Ln_TABLE_MASK ((1 << 12) - 1)
 
+
+#define LOAD_ALIGN_SHIFT 21
+#define LOAD_ALIGN     ((1 << LOAD_ALIGN_SHIFT) - 1)
+#define LOAD_ADDR_MASK (~LOAD_ALIGN)
+
+
+
 #endif
