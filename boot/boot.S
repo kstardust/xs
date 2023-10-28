@@ -1,4 +1,4 @@
-    .text
+.section ".text.boot" 
 
 #include <params.h>
 #include <aa64reg.h>

@@ -1,4 +1,4 @@
-.section ".text.boot"
+    .text
 
 
 handle_irq:
