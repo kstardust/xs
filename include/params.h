@@ -11,7 +11,6 @@
 #define PAGE_SIZE         (1 << PAGE_SHIFT)
 #define PAGE_SIZE_MASK    (PAGE_SIZE - 1)
 
-
 #define KERN_STACK_SIZE    (PAGE_SIZE)
 
 #endif

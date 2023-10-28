@@ -1,4 +1,4 @@
-#include <pl011.h>
+#include <uart_io.h>
 
 void
 uart_print(const char *str)

@@ -7,7 +7,14 @@ pl011_reg(uint64_t field)
 }
 
 void
-init_uart()
+wait_transmitting()
+{
+    while (*(pl011_reg(PL011_UARTFR)) & FR_BUSY)
+        ;
+}
+
+void
+uart_init()
 {  
     volatile uint32_t *rate_i = pl011_reg(PL011_UARTIBRD);
     volatile uint32_t *rate_f = pl011_reg(PL011_UARTFBRD);
@@ -48,12 +55,6 @@ init_uart()
     
     // enable
     *tcr |= UARTEN;
-}
-
-void
-wait_transmitting()
-{
-    while (*(pl011_reg(PL011_UARTFR)) & FR_BUSY) ;
 }
 
 void

@@ -42,6 +42,8 @@ _start:
     
     bl      start_mmu
 
+    bl      enable_fpu
+    
     /* switch to virtual address space */
     ldr     x1, vmdone_addr
     br      x1  
@@ -294,7 +296,15 @@ setup_exception:
     msr	    vbar_el1, x2
     ret
     
-    
+
+enable_fpu:
+    /* enable neon */
+    mrs x1, cpacr_el1
+    orr x1, x1, #(0x3 << 20)
+    msr cpacr_el1, x1
+    isb
+
+
 start_mmu:
     dsb sy
     

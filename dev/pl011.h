@@ -1,7 +1,7 @@
 #ifndef _PL011_H
 #define _PL011_H
 
-#include "ctypes.h"
+#include <ctypes.h>
 
 enum {
     PL011_UART_BASE = 0x9000000,               // from dts
@@ -34,9 +34,7 @@ enum {
 #define UARTCLK 24000000 // from dts
 #define BAUDRATE 115200  // default baudrate of qemu
 
-void init_uart();
+
 volatile uint32_t* pl011_reg(uint64_t field);
-void wait_transmitting();
-void uart_write(char c);
 
 #endif

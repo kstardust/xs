@@ -1,4 +1,5 @@
-#include "pl011.h"
+#include <uart_io.h>
+#include <string.h>
 
 int
 is_mmu_enabled()
@@ -8,15 +9,12 @@ is_mmu_enabled()
   return sctlr & 1;
 }
 
-char msg[] = "hello world\n";
+char msg[] = "hello world";
 
 int
 c_start()
 {
-    init_uart();
-    char *i = msg;
-    while (*i) {
-        uart_write(*i++);
-    }
+    uart_init();
+    printf("%s\n", msg);    
     return 0;
 }
