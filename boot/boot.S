@@ -72,6 +72,9 @@ vmdone:
     svc     0    
     bl 	    c_start
     svc     0
+    
+    bl 	    uart_test
+    
     mov     x24, #0xf
     
 5:

@@ -50,8 +50,8 @@ uart_init()
     // disable DMA
     *pl011_reg(PL011_UARTDMACR) = 0;
 
-    // enable TX
-    *tcr |= UARTTXE;
+    // enable TX/RX
+    *tcr |= (UARTTXE | UARTRXE);
     
     // enable
     *tcr |= UARTEN;
@@ -64,3 +64,17 @@ uart_write(char c)
     *pl011_reg(PL011_UARTDR) = c & DATA_MASK;
     wait_transmitting();    
 }
+
+int
+uart_poll()
+{
+    return *pl011_reg(PL011_UARTFR) & FR_RXFE;
+}
+
+void
+uart_read(unsigned char *c)
+{
+    while (uart_poll() != 0);
+    *c = *pl011_reg(PL011_UARTDR) & DATA_MASK;
+}
+

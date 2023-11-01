@@ -18,3 +18,15 @@ c_start()
     printf("%s\n", msg);    
     return 0;
 }
+
+void
+uart_test()
+{
+    unsigned char c;
+    while (1) {
+        uart_read(&c);
+        uart_write(c);
+        if (c == '\r')
+            uart_write('\n');
+    }
+}

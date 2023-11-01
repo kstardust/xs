@@ -17,6 +17,7 @@ enum {
 };
 
 #define FR_BUSY (1 << 3)
+#define FR_RXFE (1 << 4)
 #define UARTEN  1
 
 #define UARTFEN   (1 << 4)
@@ -28,7 +29,7 @@ enum {
 #define UARTRXE   (1 << 9)
 
 #define WLEN_8    0x60
-#define DATA_MASK 0x7f
+#define DATA_MASK 0xff
 #define UARTINTMASK 0x7ff
 
 #define UARTCLK 24000000 // from dts
