@@ -1,4 +1,7 @@
+#include <platform.h>
+#include <common.h>
 #include "pl011.h"
+
 
 volatile uint32_t*
 pl011_reg(uint64_t field)
@@ -55,26 +58,28 @@ uart_init()
     
     // enable
     *tcr |= UARTEN;
+
+    MEMORY_BARRIER;
 }
 
 void
 uart_write(char c)
 {
     wait_transmitting();
-    *pl011_reg(PL011_UARTDR) = c & DATA_MASK;
+    WRITE32(PL011_UARTDR, c & DATA_MASK);
     wait_transmitting();    
 }
 
 int
 uart_poll()
 {
-    return *pl011_reg(PL011_UARTFR) & FR_RXFE;
+    return READ32(PL011_UARTFR) & FR_RXFE;
 }
 
 void
 uart_read(unsigned char *c)
 {
     while (uart_poll() != 0);
-    *c = *pl011_reg(PL011_UARTDR) & DATA_MASK;
+    *c = READ32(PL011_UARTDR) & DATA_MASK;
 }
 

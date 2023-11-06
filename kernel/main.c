@@ -1,5 +1,8 @@
 #include <uart_io.h>
 #include <string.h>
+#include <virtio.h>
+#include <gic.h>
+
 
 int
 is_mmu_enabled()
@@ -14,7 +17,10 @@ char msg[] = "hello world";
 int
 c_start()
 {
+    gic_init();    
     uart_init();
+    virtio_init();
+
     printf("%s\n", msg);    
     return 0;
 }

@@ -27,4 +27,4 @@ clean:
 	(cd kernel; make clean)
 	(cd dev; make clean)
 	(cd lib; make clean)
-	rm kernel8.elf *.o *.img 2> /dev/null || true
+	rm kernel8.elf *.o kernel.img 2> /dev/null || true

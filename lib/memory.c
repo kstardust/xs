@@ -34,7 +34,7 @@ void *
 malloc(size_t size)
 {
     // abort
-    *(volatile int*)(0) = 1;
+    *(volatile int *)(0) = 1;
 
     return NULL;
 }
