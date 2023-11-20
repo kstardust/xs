@@ -30,6 +30,9 @@ _start:
 1:  wfe
     b       1b
 2:  /* main core */
+
+    /* enable interrupts */
+    msr     daifclr, #(DAIF_ALL)
     
     bl      get_virt_delta
     bl      relocate
@@ -66,15 +69,14 @@ vmdone:
     b       3b    
     
 4:
-    bl 	    c_start    
+    bl 	    c_start
+/*    
     svc     0
     bl 	    c_start
     svc     0    
     bl 	    c_start
     svc     0
-    
-    bl 	    uart_test
-    
+*/
     mov     x24, #0xf
     
 5:

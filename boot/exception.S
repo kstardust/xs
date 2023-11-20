@@ -19,6 +19,7 @@ handle_empty:
         
 .macro	vector	name
     .align 7        /* 128 bytes */
+
     mrs x28, esr_el1
     b handle_\name
 

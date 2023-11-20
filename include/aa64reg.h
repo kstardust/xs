@@ -54,6 +54,12 @@
 #define LOAD_ALIGN     ((1 << LOAD_ALIGN_SHIFT) - 1)
 #define LOAD_ADDR_MASK (~LOAD_ALIGN)
 
-
+#define	DAIF_D			(1 << 3)
+#define	DAIF_A			(1 << 2)
+#define	DAIF_I			(1 << 1)
+#define	DAIF_F			(1 << 0)
+#define	DAIF_ALL		(DAIF_D | DAIF_A | DAIF_I | DAIF_F)
+#define	DAIF_INTR		(DAIF_I)	/* All exceptions that pass */
 
 #endif
+

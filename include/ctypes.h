@@ -14,6 +14,7 @@ typedef unsigned long u_long;
 typedef	long long quad_t;
 typedef	unsigned long long u_quad_t;
 typedef unsigned short uint16_t;
+typedef unsigned char uint8_t;
 
 typedef uint64_t uintptr_t;
 typedef long long intmax_t;

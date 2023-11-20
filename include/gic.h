@@ -3,6 +3,11 @@
 
 #include <ctypes.h>
 
+typedef void (*gic_handler)();
+    
+#define MAX_GIC_ID 1024
+
+#define GIC_SPURIOUS_INTID  1023 // see doc, this is for no pending interrupts
 /*
   The format for interrupts in device tree:
   https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/interrupt-controller/arm,gic.yaml
@@ -64,5 +69,9 @@ typedef volatile struct __attribute__((packed)) {
 
 void gic_init();
 void gic_enable_interrupt(uint32_t id);
-    
+void gic_end_interrupt(uint32_t id);
+void gic_register_handler(uint32_t id, gic_handler handler);
+uint32_t gic_interrupt_acknowledge();
+uint32_t gic_get_pending(uint32_t id);
+void gic_clear_all_pending();
 #endif
