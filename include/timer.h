@@ -4,7 +4,7 @@
 #include <ctypes.h>
 
 #define TIMER_INTID 0xe + 0x10 // from devicetree, PPI starts from 0x10
-#define HZ 100
+#define HZ 1
 
 void timer_init();
 

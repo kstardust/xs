@@ -1,4 +1,4 @@
-qemu-system-aarch64 -gdb tcp::2234 -S \
+qemu-system-aarch64  \
   -M virt \
   -cpu cortex-a72 \
   -smp 4 \

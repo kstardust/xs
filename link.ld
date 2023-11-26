@@ -11,6 +11,7 @@ SECTIONS
         *(COMMON)
         __bss_end = .;
     }
+    . = ALIGN(8); #The end has to align to 8 for relocation in boot.S
     _end = .;
 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }

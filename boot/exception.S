@@ -1,20 +1,37 @@
     .text
 
+.macro save_register
+    str lr, [sp, #-16]!
+.endm
 
+
+.macro restore_register
+    ldr lr, [sp], #16
+.endm
+    
+    
 handle_irq:
+    save_register
     bl  do_handle_irq
+    restore_register
     eret
 
 handle_sync:
+    save_register
     bl  do_handle_sync
+    restore_register
     eret
 
 handle_error:
+    save_register
     bl  do_handle_error
+    restore_register
     eret    
     
 handle_empty:
+    save_register
     bl  do_handle_empty
+    restore_register
     eret
         
 .macro	vector	name

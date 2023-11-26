@@ -1,5 +1,6 @@
 #include <uart_io.h>
-
+#include <aa64reg.h>
+#include <gic.h>
 
 void
 do_handle_empty()
@@ -22,5 +23,5 @@ do_handle_sync()
 void
 do_handle_irq()
 {
-    uart_print("IRQ\n");
+    gic_isr();
 }

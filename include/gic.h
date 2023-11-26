@@ -71,7 +71,9 @@ void gic_init();
 void gic_enable_interrupt(uint32_t id);
 void gic_end_interrupt(uint32_t id);
 void gic_register_handler(uint32_t id, gic_handler handler);
-uint32_t gic_interrupt_acknowledge();
+uint32_t gic_acknowledge_interrupt();
 uint32_t gic_get_pending(uint32_t id);
 void gic_clear_all_pending();
+void gic_isr();
+
 #endif

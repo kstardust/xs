@@ -22,7 +22,7 @@
     
 _start:
     .align 2
-    
+
     mrs     x1, mpidr_el1
     and     x1, x1, #3
     cbz     x1, 2f
@@ -32,9 +32,10 @@ _start:
 2:  /* main core */
 
     /* enable interrupts */
-    msr     daifclr, #(DAIF_ALL)
-    
+    msr     daifclr, #(DAIF_I)
+
     bl      get_virt_delta
+
     bl      relocate
     
     bl      get_virt_delta
@@ -67,7 +68,6 @@ vmdone:
     sub     w2, w2, #1
     
     b       3b    
-    
 4:
     bl 	    c_start
 /*    
@@ -111,7 +111,7 @@ relocate:
     /* End of program (PA) */
     adrp x2, _end
     add  x2, x2, :lo12:_end
-    
+
     /* size */
     sub x3, x2, x1
 
@@ -128,7 +128,7 @@ relocate:
     /* jump to new location */
     /* ret addr */
     add x30, x30, x4
-    
+
 redone: 
     ret
     

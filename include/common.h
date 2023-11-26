@@ -14,4 +14,7 @@ void putchar(int c);
 #define WRITE32(x, y) (*(volatile uint32_t*)((x)) = (y))
 #define WRITE64(x, y) (*(volatile uint64_t*)((x)) = (y))
 
+#define STRING(x) #x
+#define XSTRING(x) STRING(x)
+
 #endif

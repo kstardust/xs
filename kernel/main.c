@@ -3,6 +3,7 @@
 #include <virtio.h>
 #include <timer.h>
 #include <gic.h>
+#include <platform.h>
 
 
 int
@@ -18,29 +19,22 @@ get_timevalue()
 {
   long sctlr;
   asm volatile("mrs %0, cntp_tval_el0" : "=r" (sctlr));
-  printf("timervalue %d\n", sctlr);
+  if (sctlr <= 10000)
+      printf("timervalue %d\n", sctlr);
 }
-
-char msg[] = "hello world";
 
 int
 c_start()
-{
+{ 
     gic_init();
     timer_init();
     uart_init();
     virtio_init();
-    
-    printf("%s\n", msg);
+
+    printf("hello\n");
+ 
     while (1) {
-        continue;
-        get_timevalue();
-
-        /* uint32_t x; */
-        /* asm volatile("mrs %0, cntv_ctl_el0\n" */
-
-        /*              : "=r"( */
-        printf("x---------%d\n", gic_interrupt_acknowledge());
+        wfe();
     }
 
     return 0;

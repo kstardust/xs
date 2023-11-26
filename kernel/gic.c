@@ -20,7 +20,7 @@ gic_init()
     gic_cinf->CCTLR = 0x3;
     gic_cinf->CBPR  = 0;
     gic_dis->DCTLR = 0x3;    
-    printf("CTLF %d\n", gic_dis->DCTLR);
+
     MEMORY_BARRIER;
 }
 
@@ -31,12 +31,21 @@ gic_enable_interrupt(uint32_t id)
     uint8_t bit = id & ((1 << 5) - 1);
     gic_dis->DISENABLER[offset] |= (1 << bit);
  
-    // TODO: target PE for SPI
+    MEMORY_BARRIER;
+}
+
+void
+gic_disable_interrupt(uint32_t id)
+{
+    uint8_t offset = (id >> 5);
+    uint8_t bit = id & ((1 << 5) - 1);
+    gic_dis->DICENABLER[offset] &= (1 << bit);
+
     MEMORY_BARRIER;
 }
 
 uint32_t
-gic_interrupt_acknowledge()
+gic_acknowledge_interrupt()
 {
     return gic_cinf->CIAR;    
 }
@@ -44,7 +53,7 @@ gic_interrupt_acknowledge()
 void
 gic_end_interrupt(uint32_t id)
 {
-    gic_cinf->CAEOIR = id;
+    gic_cinf->CEOIR = id;
     MEMORY_BARRIER;
 }
 
@@ -62,12 +71,23 @@ gic_get_pending(uint32_t id)
     return (gic_dis->DISPENDR[offset] & (1 << bit)) != 0;
 }
 
-
 void
 gic_clear_all_pending()
 {
-    for (uint32_t id = gic_interrupt_acknowledge();
-         id != GIC_SPURIOUS_INTID ; id = gic_interrupt_acknowledge()) {
+    for (uint32_t id = gic_acknowledge_interrupt();
+         id != GIC_SPURIOUS_INTID ; id = gic_acknowledge_interrupt()) {
         gic_end_interrupt(id);
     }
+}
+
+void
+gic_isr()
+{
+    int id = gic_acknowledge_interrupt();
+    if (id == GIC_SPURIOUS_INTID)
+        return;
+    disable_intr();
+    gic_end_interrupt(id);
+    handlers[id]();
+    enable_intr();
 }
