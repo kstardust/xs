@@ -20,8 +20,6 @@ gic_init()
     gic_cinf->CCTLR = 0x3;
     gic_cinf->CBPR  = 0;
     gic_dis->DCTLR = 0x3;    
-
-    MEMORY_BARRIER;
 }
 
 void
@@ -30,8 +28,6 @@ gic_enable_interrupt(uint32_t id)
     uint8_t offset = (id >> 5);
     uint8_t bit = id & ((1 << 5) - 1);
     gic_dis->DISENABLER[offset] |= (1 << bit);
- 
-    MEMORY_BARRIER;
 }
 
 void
@@ -40,8 +36,6 @@ gic_disable_interrupt(uint32_t id)
     uint8_t offset = (id >> 5);
     uint8_t bit = id & ((1 << 5) - 1);
     gic_dis->DICENABLER[offset] &= (1 << bit);
-
-    MEMORY_BARRIER;
 }
 
 uint32_t
@@ -54,7 +48,6 @@ void
 gic_end_interrupt(uint32_t id)
 {
     gic_cinf->CEOIR = id;
-    MEMORY_BARRIER;
 }
 
 void
@@ -86,8 +79,6 @@ gic_isr()
     int id = gic_acknowledge_interrupt();
     if (id == GIC_SPURIOUS_INTID)
         return;
-    disable_intr();
     gic_end_interrupt(id);
     handlers[id]();
-    enable_intr();
 }
