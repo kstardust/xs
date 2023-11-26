@@ -35,7 +35,7 @@ gic_disable_interrupt(uint32_t id)
 {
     uint8_t offset = (id >> 5);
     uint8_t bit = id & ((1 << 5) - 1);
-    gic_dis->DICENABLER[offset] &= (1 << bit);
+    gic_dis->DICENABLER[offset] |= (1 << bit);
 }
 
 uint32_t
