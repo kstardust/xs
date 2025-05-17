@@ -348,14 +348,15 @@ tcr:
 
     
 get_virt_delta:
-    .align 2
+
     adrp    x1, virt_addr
     add     x1, x1, :lo12:virt_addr
     ldr     x2, [x1]
     sub     x27, x1, x2               /* DELTA(x27) = PA(x1) - VA(x2) */
     
     ret
-virt_addr:  
+virt_addr: 
+    .align 3
     .quad virt_addr            
 
 .bss
