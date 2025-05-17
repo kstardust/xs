@@ -1,8 +1,9 @@
-.section ".text.boot" 
+.section ".text.boot"
+
 
 #include <params.h>
 #include <aa64reg.h>
-    
+
 .global _start
 
 
@@ -15,13 +16,12 @@
  * monitor), and the stack, which is located immediately after the ELF file, is also in ROM.
  * All stack operations will fail quietly.
  */
-    
+
 .global kernaddr
 .set kernaddr, KERN_MIN_ADDR // for elf, use: 0x40000000
 
-    
-_start:
     .align 2
+_start:
 
     mrs     x1, mpidr_el1
     and     x1, x1, #3
@@ -37,68 +37,66 @@ _start:
     bl      get_virt_delta
 
     bl      relocate
-    
+
     bl      get_virt_delta
-    
+
     bl      setup_exception
-    
+
     bl      build_page_table
-    
+
     bl      start_mmu
 
     bl      enable_fpu
-    
+
     /* switch to virtual address space */
     ldr     x1, vmdone_addr
-    br      x1  
+    br      x1
 
 vmdone:
-    /* Set stack to start below our code */    
+    /* Set stack to start below our code */
     adrp    x1, stack_end
     add     x1, x1, :lo12:stack_end
-        
+
     mov     sp, x1
 
     /* init bss */
     ldr     x1, =__bss_start
     ldr     w2, =__bss_size
 3:  cbz     w2, 4f
-    
+
     str     xzr, [x1], #8
     sub     w2, w2, #1
-    
-    b       3b    
+
+    b       3b
 4:
     bl 	    c_start
-/*    
+/*
     svc     0
     bl 	    c_start
-    svc     0    
+    svc     0
     bl 	    c_start
     svc     0
 */
     mov     x24, #0xf
-    
+
 5:
     wfe
     b       5b
-    
+
 vmdone_addr:
     .quad vmdone
-    
+
 
 relocate:
-    .align 2
-    
     /*
      * We only implemented L2 page table in this file, which needs ours kernel to be loaded
      * at 2MiB aligned address, if not, reposition ourself to the next 2MiB boundary.
     */
-    /* PA */    
+    /* PA */
     mov x6, #(kernaddr)
-    
+
     add x1, x6, x27
-    
+
     ldr x2, =(LOAD_ALIGN)
     ldr x3, =(LOAD_ADDR_MASK)
 
@@ -107,7 +105,7 @@ relocate:
 
     sub x4, x4, x1
     cbz x4, redone
-    
+
     /* End of program (PA) */
     adrp x2, _end
     add  x2, x2, :lo12:_end
@@ -115,13 +113,13 @@ relocate:
     /* size */
     sub x3, x2, x1
 
-    /* End of new position (PA) */    
+    /* End of new position (PA) */
     add x1, x2, x4
-    
+
     /* forward copy */
 1:  ldr x5, [x2, #-8]!
     str x5, [x1, #-8]!
-    
+
     sub x3, x3, #8
     cbnz x3, 1b
 
@@ -129,12 +127,12 @@ relocate:
     /* ret addr */
     add x30, x30, x4
 
-redone: 
+redone:
     ret
-    
+
 build_page_table:
     /* x27: PA - VA */
-    
+
     /* Save LR */
     mov x28, x30
 
@@ -145,13 +143,13 @@ build_page_table:
     mov x8, #(kernaddr)
     add x7, x8, x27
     mov x9, #512
-    
+
     /* L2 */
     bl build_l2_block
 
     mov x7, x10
     add x10, x10, #(PAGE_SIZE)
-    
+
     /* L1 */
     bl link_l1_table
 
@@ -164,11 +162,11 @@ build_page_table:
     /* build a 512G VA == PA page */
     adrp x10, page_table_el0_l1
     add x10, x10, :lo12:page_table_el0_l1
-    
+
     mov x8, #0
     mov x7, #0
     mov x9, #512
-    
+
     /* VA == PA L1 */
     bl build_l1_block
 
@@ -180,9 +178,9 @@ build_page_table:
 
     /* Restore LR*/
     mov x30, x28
-    
+
     ret
-    
+
 build_l1_block:
     /*
     1G region
@@ -197,20 +195,20 @@ build_l1_block:
     orr x11, x11, #(TD_DEFAUL_ATTR)
     orr x11, x11, #(TD_ATTR_UXN)
 
-    /* index */    
+    /* index */
     lsr x12, x8, #(L1_SHIFT)
     and x12, x12, #(Ln_ADDR_MASK)
-    
+
     /* output PA */
     lsr x7, x7, #(L1_SHIFT)
-    
+
 1:  orr x13, x11, x7, lsl #(L1_SHIFT)
     str x13, [x10, x12, lsl #3]
 
     sub x9, x9, #1
     add x7, x7, #1
     add x12, x12, #1
-    
+
     cbnz x9, 1b
 
     ret
@@ -229,25 +227,25 @@ build_l2_block:
     orr x11, x11, #(TD_DEFAUL_ATTR)
     orr x11, x11, #(TD_ATTR_UXN)
 
-    /* index */    
+    /* index */
     lsr x12, x8, #(L2_SHIFT)
     and x12, x12, #(Ln_ADDR_MASK)
 
     /* output PA */
     lsr x7, x7, #(L2_SHIFT)
-    
+
 1:  orr x13, x11, x7, lsl #(L2_SHIFT)
     str x13, [x10, x12, lsl #3]
 
     sub x9, x9, #1
     add x7, x7, #1
     add x12, x12, #1
-    
+
     cbnz x9, 1b
 
     ret
 
-    
+
 link_l0_table:
     /*
         x7 PA start(L1 table)
@@ -293,14 +291,14 @@ link_l1_table:
     str x13, [x10, x12, lsl #3]
 
     ret
-    
+
 
 setup_exception:
     adrp	x2, exception_table
     add x2, x2, :lo12:exception_table
     msr	    vbar_el1, x2
     ret
-    
+
 
 enable_fpu:
     /* enable neon */
@@ -312,7 +310,7 @@ enable_fpu:
 
 start_mmu:
     dsb sy
-    
+
     tlbi vmalle1
 
     adrp x1, page_table_el0_l0
@@ -328,7 +326,7 @@ start_mmu:
     mrs	x3, id_aa64mmfr0_el1
 	/* Copy the IPS from id_aa64mmfr0_el1 into TCR.IPS (PARange) */
     bfi	x2, x3, #(TCR_IPS_SHIFT), #(TCR_IPS_WIDTH)
-    msr tcr_el1, x2 
+    msr tcr_el1, x2
     isb
 
     ldr x2, mair
@@ -338,7 +336,7 @@ start_mmu:
     orr x0, x0, #1
     msr sctlr_el1, x0
     isb
-    
+
     ret
 
 mair:
@@ -346,18 +344,19 @@ mair:
 tcr:
     .quad TCR
 
-    
+
 get_virt_delta:
 
     adrp    x1, virt_addr
     add     x1, x1, :lo12:virt_addr
     ldr     x2, [x1]
     sub     x27, x1, x2               /* DELTA(x27) = PA(x1) - VA(x2) */
-    
+
     ret
-virt_addr: 
+
     .align 3
-    .quad virt_addr            
+virt_addr:
+    .quad virt_addr
 
 .bss
     .align PAGE_SHIFT
@@ -366,10 +365,10 @@ stack_start:
     .space KERN_STACK_SIZE
 stack_end:
 
-    
+
 .section .init_pagetable, "aw", %nobits
     .align PAGE_SHIFT
-    
+
 /* VA == PA table */
 page_table_el0_l1:
     .space PAGE_SIZE
