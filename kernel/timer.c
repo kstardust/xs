@@ -7,7 +7,7 @@
 static uint32_t freq;
 
 void
-timer_schedule()    
+timer_schedule()
 {
     uint64_t t = HZ * freq;
     asm volatile ("msr cntp_tval_el0, %0": : "r" (t));
@@ -34,7 +34,7 @@ timer_init()
 
     /* enable timer */
     asm volatile("msr cntp_ctl_el0, %x0\n\t":: "r" (1));
-    
+
     timer_schedule();
     gic_register_handler(TIMER_INTID, timer_gic_handler);
     gic_enable_interrupt(TIMER_INTID);

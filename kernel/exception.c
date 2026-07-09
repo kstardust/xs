@@ -17,7 +17,7 @@ do_handle_error()
 void
 do_handle_sync()
 {
-    uart_print("SYNC\n");   
+    uart_print("SYNC\n");
 }
 
 void

@@ -12,14 +12,14 @@ void
 gic_init()
 {
     gic_clear_all_pending();
-    
+
     gic_dis = (volatile gic_distributor_registers*)GIC_DISTR_BASE;
     gic_cinf = (volatile gic_cpu_interface_registers*)GIC_CPUINTER_BASE;
-    
+
     gic_cinf->CCPMR = 0xff;
     gic_cinf->CCTLR = 0x3;
     gic_cinf->CBPR  = 0;
-    gic_dis->DCTLR = 0x3;    
+    gic_dis->DCTLR = 0x3;
 }
 
 void
@@ -41,7 +41,7 @@ gic_disable_interrupt(uint32_t id)
 uint32_t
 gic_acknowledge_interrupt()
 {
-    return gic_cinf->CIAR;    
+    return gic_cinf->CIAR;
 }
 
 void
@@ -60,7 +60,7 @@ uint32_t
 gic_get_pending(uint32_t id)
 {
     uint8_t offset = (id >> 5);
-    uint8_t bit = id & ((1 << 5) - 1);    
+    uint8_t bit = id & ((1 << 5) - 1);
     return (gic_dis->DISPENDR[offset] & (1 << bit)) != 0;
 }
 

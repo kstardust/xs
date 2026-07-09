@@ -60,6 +60,8 @@ vmdone:
     mov     sp, x1
 
     /* init bss */
+    /* divide size by 8, since str xzr writes 8 bytes */
+    lsr     w2, w2, #3
     ldr     x1, =__bss_start
     ldr     w2, =__bss_size
 3:  cbz     w2, 4f
@@ -70,19 +72,22 @@ vmdone:
     b       3b
 4:
     bl 	    c_start
-/*
+    bl 	    greet
+
     svc     0
-    bl 	    c_start
+    bl 	    greet
     svc     0
-    bl 	    c_start
+    bl 	    greet
     svc     0
-*/
+    bl 	    forever
+
     mov     x24, #0xf
 
 5:
     wfe
     b       5b
 
+    .align 3
 vmdone_addr:
     .quad vmdone
 
@@ -339,6 +344,7 @@ start_mmu:
 
     ret
 
+    .align 3
 mair:
     .quad MAIR_NORMAL_WB
 tcr:

@@ -25,19 +25,27 @@ get_timevalue()
 
 int
 c_start()
-{ 
+{
     gic_init();
     timer_init();
     uart_init();
     virtio_init();
+    return 0;
+}
 
+void
+greet()
+{
     printf("hello\n");
- 
+}
+
+void
+forever()
+{
     while (1) {
         wfe();
     }
 
-    return 0;
 }
 
 void
