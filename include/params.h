@@ -1,6 +1,7 @@
 #ifndef _PARAMS
 #define _PARAMS
 
+/* must be valid TTBR1 range if not using elf */
 #define KERN_MAX_ADDR 0xffff000080000000
 #define KERN_MIN_ADDR 0xffff000000000000 /* 2GB */
 
