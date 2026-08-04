@@ -13,7 +13,10 @@ SECTIONS
 	. = ALIGN(8);
         __bss_end = .;
     }
-    . = ALIGN(8); #The end has to align to 8 for relocation in boot.S
+    .init_pagetable (NOLOAD) : {
+        *(.init_pagetable .init_pagetable.*)
+    }
+    . = ALIGN(16);
     _end = .;
 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
