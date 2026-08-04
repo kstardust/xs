@@ -464,14 +464,7 @@
 
 #define l_mathop(op)		op
 
-int lua_number2str_impl(char *, size_t, double);
-double lua_str2number_impl(const char *, char **);
-
-#undef lua_number2str
-#define lua_number2str(s,sz,n) \
-	lua_number2str_impl((s), (sz), (double)(n))
-
-#define lua_str2number(s,p)	lua_str2number_impl((s), (p))
+#define lua_str2number(s,p)	strtod((s), (p))
 
 #elif LUA_FLOAT_TYPE == LUA_FLOAT_INT64	/* }{ int64 */
 

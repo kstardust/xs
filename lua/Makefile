@@ -8,7 +8,7 @@ ASMFILES =
 OFILES = $(CFILES:.c=.o)
 ASMOFILES = $(ASMFILES:.S=.o)
 CFLAGS = $(BASE_CFLAGS)
-CFLAGS += -I../include -I../openlibm/include -DLUA_FREESTANDING \
+CFLAGS += -I../include -DLUA_FREESTANDING \
 	-DLUA_NO_FILESYSTEM -DLUA_USE_C89 -include lstd.h
 LDFLAGS= -r
 

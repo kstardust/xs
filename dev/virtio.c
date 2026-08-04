@@ -1,5 +1,6 @@
 #include <virtio.h>
 #include <common.h>
+#include <stdio.h>
 #include <string.h>
 
 
@@ -7,12 +8,14 @@ int
 virtio_dev_init(virtio_regs *v)
 {
     if (v->MagicValue != VIRTIO_MAGIC) {
-        printf("virtio dev at 0x%x wrong magic number: 0x%x\n", v, v->MagicValue);
+        printf("virtio dev at %p wrong magic number: 0x%x\n", (void *)v,
+            v->MagicValue);
         return -1;
     }
 
     if (v->Version != VIRTIO_VERSION) {
-        printf("virtio dev at 0x%x wrong version: 0x%x\n", v, v->Version);
+        printf("virtio dev at %p wrong version: 0x%x\n", (void *)v,
+            v->Version);
         return -1;
     }
 
