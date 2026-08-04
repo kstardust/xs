@@ -3,7 +3,7 @@ ASMFILES = $(wildcard *.S)
 OFILES = $(CFILES:.c=.o)
 ASMOFILES = $(ASMFILES:.S=.o)
 CFLAGS = $(BASE_CFLAGS)
-CFLAGS += -I../include
+CFLAGS += -I../include -I../lua
 LDFLAGS = -r
 
 kernel.o: $(OFILES) $(ASMOFILES)

@@ -4,6 +4,7 @@
 #include <timer.h>
 #include <gic.h>
 #include <platform.h>
+#include <lua_embed.h>
 
 
 int
@@ -27,9 +28,10 @@ int
 c_start()
 {
     gic_init();
-    timer_init();
     uart_init();
     virtio_init();
+    lua_run_cpu_test();
+    timer_init();
     return 0;
 }
 

@@ -39,7 +39,7 @@
  */
 
 #include <string.h>
-#include <stdargs.h>
+#include <stdarg.h>
 #include <ctypes.h>
 
 #ifndef NULL
