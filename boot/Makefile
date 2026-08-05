@@ -3,7 +3,8 @@ ASMFILES = $(wildcard *.S)
 OFILES = $(CFILES:.c=.o)
 ASMOFILES = $(ASMFILES:.S=.o)
 CFLAGS = $(BASE_CFLAGS)
-CFLAGS += -I../include
+CFLAGS += -I../include -MMD -MP
+DEPS = $(OFILES:.o=.d) $(ASMOFILES:.o=.d)
 LDFLAGS= -r
 
 _boot.o: $(OFILES) $(ASMOFILES)
@@ -17,4 +18,6 @@ _boot.o: $(OFILES) $(ASMOFILES)
 
 
 clean:
-	rm *.o 2> /dev/null || true
+	rm *.o *.d 2> /dev/null || true
+
+-include $(DEPS)

@@ -1,12 +1,8 @@
 #ifndef _C_COMMON
 #define _C_COMMON
 
-#include <ctypes.h>
-
-void* memset(void *s, int c, size_t n);
-void* memcpy(void *dest, const void *src, size_t n);
-void* malloc(size_t size);
-void putchar(int c);
+#include <stddef.h>
+#include <stdint.h>
 
 #define READ32(x) (*(volatile uint32_t*)((x)))
 #define READ64(x) (*(volatile uint64_t*)((x)))

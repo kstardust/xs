@@ -1,10 +1,11 @@
 #include <timer.h>
+#include <stdio.h>
 #include <gic.h>
 #include <platform.h>
 #include <string.h>
 
 
-static uint32_t freq;
+static uint64_t freq;
 
 void
 timer_schedule()

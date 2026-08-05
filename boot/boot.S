@@ -364,7 +364,7 @@ get_virt_delta:
 virt_addr:
     .quad virt_addr
 
-.bss
+.section .stack, "aw", %nobits
     .align PAGE_SHIFT
 
 stack_start:

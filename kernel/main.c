@@ -1,9 +1,11 @@
 #include <uart_io.h>
+#include <stdio.h>
 #include <string.h>
 #include <virtio.h>
 #include <timer.h>
 #include <gic.h>
 #include <platform.h>
+#include <lua_embed.h>
 
 
 int
@@ -20,16 +22,17 @@ get_timevalue()
   long sctlr;
   asm volatile("mrs %0, cntp_tval_el0" : "=r" (sctlr));
   if (sctlr <= 10000)
-      printf("timervalue %d\n", sctlr);
+      printf("timervalue %ld\n", sctlr);
 }
 
 int
 c_start()
 {
     gic_init();
-    timer_init();
     uart_init();
     virtio_init();
+    lua_run_cpu_test();
+    timer_init();
     return 0;
 }
 

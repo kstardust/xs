@@ -13,11 +13,21 @@ SECTIONS
 	. = ALIGN(8);
         __bss_end = .;
     }
+    .stack (NOLOAD) : {
+        . = ALIGN(4096);
+        __stack_start = .;
+        KEEP(*(.stack))
+        __stack_end = .;
+    }
     .init_pagetable (NOLOAD) : {
         *(.init_pagetable .init_pagetable.*)
     }
     . = ALIGN(16);
     _end = .;
+
+    /* Keep the existing 16 MiB kernel heap, now managed by Picolibc. */
+    __heap_start = _end;
+    __heap_end = __heap_start + 16M;
 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
 }
