@@ -35,7 +35,7 @@ lua_run_string(const char *source)
 
     const luaL_Reg *library;
 
-    state = lua_newstate(loader_lua_realloc, NULL);
+    state = lua_newstate(loader_lua_realloc, NULL, luaL_makeseed(NULL));
     if (state == NULL) {
         printf("lua: cannot allocate state\n");
         return LUA_ERRMEM;
@@ -75,6 +75,7 @@ int
 lua_run_cpu_test(void)
 {
     static const char source[] =
+        "assert(_VERSION == 'Lua 5.5')\n"
         "local limit = 100000\n"
         "local composite = {}\n"
         "local prime_count, prime_sum = 0, 0\n"
@@ -102,7 +103,7 @@ lua_run_cpu_test(void)
         "assert(math.abs(math.log(math.exp(2.5)) - 2.5) < 1e-12)\n"
         "local ok, message = pcall(function() error('expected test error') end)\n"
         "assert(not ok and type(message) == 'string')\n"
-        "print('FreeBSD Lua CPU/math workload: passed', prime_count, checksum, math.sqrt(2))\n";
+        "print('Lua 5.5 CPU/math workload: passed', prime_count, checksum, math.sqrt(2))\n";
     uint64_t start = read_counter();
     int status = lua_run_string(source);
     uint64_t ticks = read_counter() - start;

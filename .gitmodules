@@ -1,3 +1,6 @@
-[submodule "picolibc"]
-	path = picolibc
+[submodule "lua/src"]
+	path = lua/src
+	url = https://github.com/lua/lua.git
+[submodule "picolibc/src"]
+	path = picolibc/src
 	url = https://github.com/picolibc/picolibc.git

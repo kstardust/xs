@@ -1,0 +1,268 @@
+[
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "boot.o",
+      "boot.S"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/boot",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/boot/boot.S",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/boot/boot.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "exception.o",
+      "exception.S"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/boot",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/boot/exception.S",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/boot/exception.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "context.o",
+      "context.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/context.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/context.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "exception.o",
+      "exception.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/exception.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/exception.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "gic.o",
+      "gic.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/gic.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/gic.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "main.o",
+      "main.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/main.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/main.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "timer.o",
+      "timer.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/timer.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/kernel/timer.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "pl011.o",
+      "pl011.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/dev",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/dev/pl011.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/dev/pl011.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "virtio.o",
+      "virtio.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/dev",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/dev/virtio.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/dev/virtio.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "io.o",
+      "io.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/io.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/io.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "memory.o",
+      "memory.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/memory.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/memory.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "printf.o",
+      "printf.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/printf.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/printf.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "string.o",
+      "string.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/string.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/string.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-g",
+      "--target=aarch64-elf",
+      "-Wall",
+      "-O2",
+      "-ffreestanding",
+      "-nostdinc",
+      "-I../include",
+      "-c",
+      "-o",
+      "uart_io.o",
+      "uart_io.c"
+    ],
+    "directory": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib",
+    "file": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/uart_io.c",
+    "output": "/Users/Kevin/Development/FreeBSD/test_uart_pl011/lib/uart_io.o"
+  }
+]

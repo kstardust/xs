@@ -1,0 +1,207 @@
+diff --git a/lauxlib.c b/lauxlib.c
+index 7cf90cb..cd3fe06 100644
+--- a/lauxlib.c
++++ b/lauxlib.c
+@@ -246,6 +246,7 @@ LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...) {
+ }
+ 
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ LUALIB_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
+   int en = errno;  /* calls to Lua API may change this value */
+   if (stat) {
+@@ -303,6 +304,7 @@ LUALIB_API int luaL_execresult (lua_State *L, int stat) {
+     return 3;  /* return true/fail,what,code */
+   }
+ }
++#endif
+ 
+ /* }====================================================== */
+ 
+@@ -733,6 +735,7 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
+ ** =======================================================
+ */
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ typedef struct LoadF {
+   unsigned n;  /* number of pre-read characters */
+   FILE *f;  /* file being read */
+@@ -846,6 +849,7 @@ LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
+   lua_remove(L, fnameindex);
+   return status;
+ }
++#endif
+ 
+ 
+ typedef struct LoadS {
+@@ -1199,4 +1203,3 @@ LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver, size_t sz) {
+     luaL_error(L, "version mismatch: app. needs %f, Lua core provides %f",
+                   (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
+ }
+-
+diff --git a/lauxlib.h b/lauxlib.h
+index 7f1d3ca..0a2405b 100644
+--- a/lauxlib.h
++++ b/lauxlib.h
+@@ -10,7 +10,9 @@
+ 
+ 
+ #include <stddef.h>
++#if !defined(LUA_NO_FILESYSTEM)
+ #include <stdio.h>
++#endif
+ 
+ #include "luaconf.h"
+ #include "lua.h"
+@@ -23,8 +25,10 @@
+ typedef struct luaL_Buffer luaL_Buffer;
+ 
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ /* extra error code for 'luaL_loadfilex' */
+ #define LUA_ERRFILE     (LUA_ERRERR+1)
++#endif
+ 
+ 
+ /* key, in the registry, for table of loaded modules */
+@@ -78,8 +82,10 @@ LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
+ LUALIB_API int (luaL_checkoption) (lua_State *L, int arg, const char *def,
+                                    const char *const lst[]);
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ LUALIB_API int (luaL_fileresult) (lua_State *L, int stat, const char *fname);
+ LUALIB_API int (luaL_execresult) (lua_State *L, int stat);
++#endif
+ 
+ LUALIB_API void *luaL_alloc (void *ud, void *ptr, size_t osize,
+                                                   size_t nsize);
+@@ -92,10 +98,12 @@ LUALIB_API void *luaL_alloc (void *ud, void *ptr, size_t osize,
+ LUALIB_API int (luaL_ref) (lua_State *L, int t);
+ LUALIB_API void (luaL_unref) (lua_State *L, int t, int ref);
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ LUALIB_API int (luaL_loadfilex) (lua_State *L, const char *filename,
+                                                const char *mode);
+ 
+ #define luaL_loadfile(L,f)	luaL_loadfilex(L,f,NULL)
++#endif
+ 
+ LUALIB_API int (luaL_loadbufferx) (lua_State *L, const char *buff, size_t sz,
+                                    const char *name, const char *mode);
+@@ -146,8 +154,10 @@ LUALIB_API void (luaL_requiref) (lua_State *L, const char *modname,
+ 
+ #define luaL_typename(L,i)	lua_typename(L, lua_type(L,(i)))
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ #define luaL_dofile(L, fn) \
+ 	(luaL_loadfile(L, fn) || lua_pcall(L, 0, LUA_MULTRET, 0))
++#endif
+ 
+ #define luaL_dostring(L, s) \
+ 	(luaL_loadstring(L, s) || lua_pcall(L, 0, LUA_MULTRET, 0))
+@@ -233,6 +243,7 @@ LUALIB_API char *(luaL_buffinitsize) (lua_State *L, luaL_Buffer *B, size_t sz);
+ ** after that initial structure).
+ */
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ #define LUA_FILEHANDLE          "FILE*"
+ 
+ 
+@@ -240,6 +251,7 @@ typedef struct luaL_Stream {
+   FILE *f;  /* stream (NULL for incompletely created streams) */
+   lua_CFunction closef;  /* to close stream (NULL for closed streams) */
+ } luaL_Stream;
++#endif
+ 
+ /* }====================================================== */
+ 
+@@ -268,4 +280,3 @@ typedef struct luaL_Stream {
+ 
+ #endif
+ 
+-
+diff --git a/lbaselib.c b/lbaselib.c
+index 891bb90..afd51bb 100644
+--- a/lbaselib.c
++++ b/lbaselib.c
+@@ -347,6 +347,7 @@ static const char *getMode (lua_State *L, int idx) {
+ }
+ 
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ static int luaB_loadfile (lua_State *L) {
+   const char *fname = luaL_optstring(L, 1, NULL);
+   const char *mode = getMode(L, 2);
+@@ -354,6 +355,7 @@ static int luaB_loadfile (lua_State *L) {
+   int status = luaL_loadfilex(L, fname, mode);
+   return load_aux(L, status, env);
+ }
++#endif
+ 
+ 
+ /*
+@@ -416,6 +418,7 @@ static int luaB_load (lua_State *L) {
+ /* }====================================================== */
+ 
+ 
++#if !defined(LUA_NO_FILESYSTEM)
+ static int dofilecont (lua_State *L, int d1, lua_KContext d2) {
+   (void)d1;  (void)d2;  /* only to match 'lua_Kfunction' prototype */
+   return lua_gettop(L) - 1;
+@@ -430,6 +433,7 @@ static int luaB_dofile (lua_State *L) {
+   lua_callk(L, 0, LUA_MULTRET, 0, dofilecont);
+   return dofilecont(L, 0, 0);
+ }
++#endif
+ 
+ 
+ static int luaB_assert (lua_State *L) {
+@@ -516,11 +520,15 @@ static int luaB_tostring (lua_State *L) {
+ static const luaL_Reg base_funcs[] = {
+   {"assert", luaB_assert},
+   {"collectgarbage", luaB_collectgarbage},
++#if !defined(LUA_NO_FILESYSTEM)
+   {"dofile", luaB_dofile},
++#endif
+   {"error", luaB_error},
+   {"getmetatable", luaB_getmetatable},
+   {"ipairs", luaB_ipairs},
++#if !defined(LUA_NO_FILESYSTEM)
+   {"loadfile", luaB_loadfile},
++#endif
+   {"load", luaB_load},
+   {"next", luaB_next},
+   {"pairs", luaB_pairs},
+@@ -556,4 +564,3 @@ LUAMOD_API int luaopen_base (lua_State *L) {
+   lua_setfield(L, -2, "_VERSION");
+   return 1;
+ }
+-
+diff --git a/luaconf.h b/luaconf.h
+index 96a7780..5c0dfbd 100644
+--- a/luaconf.h
++++ b/luaconf.h
+@@ -8,6 +8,9 @@
+ #ifndef luaconf_h
+ #define luaconf_h
+ 
++/* This embedded target has no filesystem-backed Lua APIs. */
++#define LUA_NO_FILESYSTEM 1
++
+ #include <limits.h>
+ #include <stddef.h>
+ 
+@@ -637,7 +640,7 @@
+ ** macro must include the header 'locale.h'.)
+ */
+ #if !defined(lua_getlocaledecpoint)
+-#define lua_getlocaledecpoint()		(localeconv()->decimal_point[0])
++#define lua_getlocaledecpoint()		('.')
+ #endif
+ 
+ 
+@@ -742,4 +745,3 @@
+ 
+ 
+ #endif
+-

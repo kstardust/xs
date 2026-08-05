@@ -30,15 +30,13 @@ lib-build: $(PICOLIBC_BUILD)/libc.a
 	$(MAKE) -C lib $(MAKEVARS)
 
 lua-build: $(PICOLIBC_BUILD)/libc.a
+	(cd lua; ./patch.sh)
 	$(MAKE) -C lua $(MAKEVARS)
 
-$(PICOLIBC_BUILD)/CMakeCache.txt: picolibc-toolchain.cmake
-	cmake -S picolibc -B $(PICOLIBC_BUILD) \
-		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/picolibc-toolchain.cmake \
-		-DCMAKE_BUILD_TYPE=MinSizeRel
-
-$(PICOLIBC_BUILD)/libc.a: $(PICOLIBC_BUILD)/CMakeCache.txt
-	cmake --build $(PICOLIBC_BUILD) --target c
+$(PICOLIBC_BUILD)/libc.a: picolibc/Makefile picolibc/toolchain.cmake \
+		picolibc/src/CMakeLists.txt
+	$(MAKE) -C picolibc build PROJECT_ROOT="$(CURDIR)" \
+		BUILD_DIR="$(PICOLIBC_BUILD)"
 
 kernel.img: link.ld $(PICOLIBC_BUILD)/libc.a $(OBJS)
 	$(LD) $(LDFLAGS) --start-group $(OBJS) $(LIBS) --end-group -o kernel.elf
@@ -53,4 +51,5 @@ clean:
 	rm kernel.elf kernel8.elf *.o kernel.img 2> /dev/null || true
 
 clean-all: clean
-	cmake --build $(PICOLIBC_BUILD) --target clean 2> /dev/null || true
+	$(MAKE) -C picolibc clean-all PROJECT_ROOT="$(CURDIR)" \
+		BUILD_DIR="$(PICOLIBC_BUILD)"

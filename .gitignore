@@ -1,4 +1,7 @@
 /build/
+/lua/.build/
+/.ccls-cache/
+.DS_Store
 *.o
 *.d
 disk.img
