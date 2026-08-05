@@ -12,6 +12,8 @@ OBJS = boot/_boot.o kernel/kernel.o dev/dev.o lib/lib.o lua/lua.o
 LIBS = $(PICOLIBC_BUILD)/libc.a
 MAKEVARS = CC="$(CC)" LD="$(LD)" BASE_CFLAGS="$(BASE_CFLAGS)" LLVMPATH="$(LLVMPATH)"
 
+.PHONY: all clean clean-all
+
 all: kernel8.img
 
 boot/_boot.o:
@@ -47,5 +49,7 @@ clean:
 	(cd dev; make clean)
 	(cd lib; make clean)
 	(cd lua; make clean)
-	cmake --build $(PICOLIBC_BUILD) --target clean 2> /dev/null || true
 	rm kernel.elf kernel8.elf *.o kernel.img 2> /dev/null || true
+
+clean-all: clean
+	cmake --build $(PICOLIBC_BUILD) --target clean 2> /dev/null || true

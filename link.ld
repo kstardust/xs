@@ -13,6 +13,12 @@ SECTIONS
 	. = ALIGN(8);
         __bss_end = .;
     }
+    .stack (NOLOAD) : {
+        . = ALIGN(4096);
+        __stack_start = .;
+        KEEP(*(.stack))
+        __stack_end = .;
+    }
     .init_pagetable (NOLOAD) : {
         *(.init_pagetable .init_pagetable.*)
     }
