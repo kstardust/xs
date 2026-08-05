@@ -1,5 +1,4 @@
-# FreeBSD stand/liblua profile: upstream core plus the auxiliary, base, and
-# string libraries. Loader modules requiring libsa filesystems are omitted.
+# Lua core and the libraries supported by the freestanding kernel runtime.
 CFILES = lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c lgc.c \
 	llex.c lmem.c lobject.c lopcodes.c lparser.c lstate.c lstring.c \
 	ltable.c ltm.c lundump.c lvm.c lzio.c lauxlib.c lbaselib.c \
@@ -9,7 +8,8 @@ OFILES = $(CFILES:.c=.o)
 ASMOFILES = $(ASMFILES:.S=.o)
 CFLAGS = $(BASE_CFLAGS)
 CFLAGS += -I../include -DLUA_FREESTANDING \
-	-DLUA_NO_FILESYSTEM -DLUA_USE_C89 -include lstd.h
+	-DLUA_NO_FILESYSTEM -DLUA_USE_C89 -include lstd.h -MMD -MP
+DEPS = $(OFILES:.o=.d) $(ASMOFILES:.o=.d)
 LDFLAGS= -r
 
 lua.o: $(OFILES) $(ASMOFILES)
@@ -23,4 +23,6 @@ lua.o: $(OFILES) $(ASMOFILES)
 
 
 clean:
-	rm *.o 2> /dev/null || true
+	rm *.o *.d 2> /dev/null || true
+
+-include $(DEPS)

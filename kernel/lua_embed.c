@@ -20,8 +20,7 @@ loader_lua_realloc(void *context, void *pointer, size_t old_size,
     return realloc(pointer, new_size);
 }
 
-/* Mirrors FreeBSD stand/common/interp_lua.c, minus libsa-backed modules. */
-static const luaL_Reg loaded_libraries[] = {
+static const luaL_Reg builtin_libraries[] = {
     {"_G", luaopen_base},
     {LUA_STRLIBNAME, luaopen_string},
     {LUA_MATHLIBNAME, luaopen_math},
@@ -41,7 +40,7 @@ lua_run_string(const char *source)
         printf("lua: cannot allocate state\n");
         return LUA_ERRMEM;
     }
-    for (library = loaded_libraries; library->func != NULL; library++) {
+    for (library = builtin_libraries; library->func != NULL; library++) {
         luaL_requiref(state, library->name, library->func, 1);
         lua_pop(state, 1);
     }

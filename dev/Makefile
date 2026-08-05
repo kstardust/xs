@@ -3,17 +3,20 @@ ASMFILES = $(wildcard *.S)
 OFILES = $(CFILES:.c=.o)
 ASMOFILES = $(ASMFILES:.S=.o)
 CFLAGS = $(BASE_CFLAGS)
-CFLAGS += -I../include
+CFLAGS += -I../include -MMD -MP
+DEPS = $(OFILES:.o=.d) $(ASMOFILES:.o=.d)
 LDFLAGS= -r
 
 dev.o: $(OFILES) $(ASMOFILES)
 	$(LD) $(LDFLAGS) $(OFILES) $(ASMOFILES) -o dev.o
 
-%.o: %.s
+%.o: %.S
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm *.o 2> /dev/null || true
+	rm *.o *.d 2> /dev/null || true
+
+-include $(DEPS)
