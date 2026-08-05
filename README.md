@@ -1,4 +1,4 @@
-Ought to be a tiny operating system for Armv8.
+Having fun with Armv8.
 
 ## Build
 
